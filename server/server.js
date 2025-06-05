@@ -18,7 +18,7 @@ app.use('/api/rooms', roomRoutes);
 const server = http.createServer(app);
 
 const io = new Server(server, {
-  cors: { origin: 'https://codetogether-frontend.vercel.app' }
+  cors: { origin: '*' }
 });
 
 socketServer(io);
