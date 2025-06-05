@@ -10,23 +10,63 @@ import socketServer from './socket.js';
 dotenv.config();
 
 const app = express();
-app.use(cors());
+
+// ✅ Allowed frontend origins
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://codetogether-frontend.vercel.app'
+];
+
+// ✅ CORS middleware with debug
+app.use(cors({
+  origin: function (origin, callback) {
+    console.log('[CORS] Request Origin:', origin);
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.warn('[CORS] Blocked Origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
+
+// ✅ Body parser
 app.use(express.json());
+console.log('[Express] JSON body parsing enabled');
 
+// ✅ API routes
 app.use('/api/rooms', roomRoutes);
+console.log('[Express] /api/rooms route registered');
 
+// ✅ Create HTTP server
 const server = http.createServer(app);
 
+// ✅ Socket.io with CORS config
 const io = new Server(server, {
-  cors: { origin: '*' }
+  cors: {
+    origin: allowedOrigins,
+    methods: ['GET', 'POST'],
+    credentials: true
+  }
 });
+console.log('[Socket.IO] Initialized with CORS');
 
+// ✅ Socket server logic
 socketServer(io);
+console.log('[Socket.IO] Custom socket logic loaded');
 
+// ✅ MongoDB connection and server startup
 const PORT = process.env.PORT || 5000;
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
-    server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    console.log('[MongoDB] Connected successfully');
+    server.listen(PORT, () => {
+      console.log(`✅ Server running on port ${PORT}`);
+    });
   })
-  .catch(err => console.error(err));
+  .catch(err => {
+    console.error('❌ MongoDB Connection Error:', err);
+  });
