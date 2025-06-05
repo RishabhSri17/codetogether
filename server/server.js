@@ -51,7 +51,7 @@ console.log('[Express] JSON body parsing enabled');
 
 // ✅ API routes
 app.get('/', (req, res) => {
-  res.send('Welcome to CodeTogether API');
+  res.json('Welcome to CodeTogether API');
   console.log('[Express] Root route accessed');
 });
 
