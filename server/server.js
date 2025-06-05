@@ -11,13 +11,26 @@ dotenv.config();
 
 const app = express();
 
-// ✅ Allowed frontend origins
+// ✅ Manual CORS fallback (must be first for Vercel)
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', 'https://codetogether-frontend.vercel.app');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+
+  next();
+});
+
+// ✅ Debug CORS middleware with allowed origins (useful locally or if deployed on custom server)
 const allowedOrigins = [
   'http://localhost:3000',
   'https://codetogether-frontend.vercel.app'
 ];
 
-// ✅ CORS middleware with debug
 app.use(cors({
   origin: function (origin, callback) {
     console.log('[CORS] Request Origin:', origin);
@@ -37,6 +50,11 @@ app.use(express.json());
 console.log('[Express] JSON body parsing enabled');
 
 // ✅ API routes
+app.get('/', (req, res) => {
+  res.send('Welcome to CodeTogether API');
+  console.log('[Express] Root route accessed');
+});
+
 app.use('/api/rooms', roomRoutes);
 console.log('[Express] /api/rooms route registered');
 
