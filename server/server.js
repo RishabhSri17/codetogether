@@ -12,7 +12,7 @@ dotenv.config();
 const app = express();
 
 // ✅ Manual CORS fallback (must be first for Vercel)
-app.use((req, res, next) => {
+/* app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', 'https://codetogether-frontend.vercel.app');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -23,7 +23,7 @@ app.use((req, res, next) => {
   }
 
   next();
-});
+}); */
 
 // ✅ Debug CORS middleware with allowed origins (useful locally or if deployed on custom server)
 const allowedOrigins = [
